@@ -85,12 +85,12 @@ st.plotly_chart(fig2, use_container_width=True)
 #########################
 
 df_tags_filtered = df_tags[df_tags["tags"] != "Autre"]
-df_tags_filtered = df_tags_filtered["tags"].value_counts(normalize=True).reset_index(name='count')
+df_tags_filtered = df_tags_filtered["tags"].value_counts(normalize=True).reset_index(name='proportion')
 fig3 = go.Figure()
 fig3.add_trace(
     go.Pie(
         labels=df_tags_filtered["tags"],
-        values=df_tags_filtered["count"],
+        values=df_tags_filtered["proportion"],
         textinfo='label+percent',
         textposition="inside",
         showlegend=False))
@@ -104,6 +104,7 @@ st.plotly_chart(fig3, use_container_width=True)
 # rename tag into label
 df_tags_filtered = df_tags_filtered.rename(columns={"tags": "label", "count": "proportion"})
 df_tags_filtered["proportion"] = df_tags_filtered["proportion"].apply(lambda x: round(x * 100, 1))
+df_tags_filtered["nombre de posts"] = df_tags[df_tags["tags"] != "Autre"]["tags"].value_counts().reset_index(name='count')["count"]
 st.write(df_tags_filtered)
 #########################
 
