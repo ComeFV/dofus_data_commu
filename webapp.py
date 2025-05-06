@@ -12,6 +12,19 @@ st.write(
 df = pd.read_csv("data/dofus_posts_no_sub_clean_labeled.csv")
 # convert the tag columns to a col of lists
 df["tags"] = df["tags"].apply(lambda x: eval(x) if isinstance(x, str) else x)
+
+st.subheader("Methodology for labeling")
+st.markdown(
+    """
+    The topics are labeled manually based on the content of the post.
+     * Once a label is defined, a detection with keywords is created to automatically apply the label to other posts
+     * Then all remaining posts are manually checked to catch false positive or false negatives, and edit the keywords detection if necessary.
+     * **The keyword 'Autre' regroups all topics with very few instances.**
+     * There are still mistakes present notably for 'Rework songes' which is not always for rework.
+     * Complete list of keywords can be found at the end.
+    """
+)
+
 st.subheader("Data overview")
 with st.expander("Show raw data"):
     st.write(df)
@@ -123,7 +136,7 @@ selected_tag = st.selectbox(
 )
 df_selected = df[df["tags"].apply(lambda x: selected_tag in x)]
 st.write(f"Number of posts with label '{selected_tag}': {len(df_selected)}")
-st.write("**double click on a cell to veiw in full**")
+st.write("**Double click on a cell to view in full**")
 st.dataframe(df_selected[["comment", "tags", "pseudo", "day"]].sort_values(by="day", ascending=False).reset_index(drop=True))
 
 #########################
@@ -138,16 +151,7 @@ df_user = df[df["pseudo"] == selected_user]
 
 st.write(f"Number of posts by user '{selected_user}': {len(df_user)}")
 st.dataframe(df_user[["comment", "tags", "pseudo", "day"]].sort_values(by="day", ascending=False).reset_index(drop=True))
-st.subheader("Methodology for labeling")
-st.markdown(
-    """
-    The topics are labeled manually based on the content of the post.
-     * Once a label is defined, a detection with keywords is created to automatically apply the label to other posts
-     * Then all remaining posts are manually checked to catch false positive or false negatives, and edit the keywords detection if necessary.
-     * The keyword 'Autre' is for topics with very few instances.
-     * There are still mistakes present notably for 'Rework songes' which is hard to distinguish when its just used as an example or the core of the post.
-    """
-)
+
 
 # Define tag logic
 TAG_LOGIC = {
@@ -196,7 +200,7 @@ TAG_LOGIC = {
     "Autre": "(no match)"
 }
 
-with st.expander("Show logic expressions"):
+with st.expander("Show keywords/logic expressions"):
 
     selected_tags = st.multiselect("Select labels(s) to display", options=list(TAG_LOGIC.keys()), default=[])
     show_all = st.checkbox("Show all", value=False)
